@@ -24,6 +24,6 @@ The output files have the following formats:
 
 **dynamic-info.txt:**
 
-This file contains a list of entries, each one for a specific time $t_n$. Each entry goes like:
-- $t_n$
+This file contains a list of entries, each one for a specific time ![formula](https://render.githubusercontent.com/render/math?math=t_n). Each entry goes like:
+- ![formula](https://render.githubusercontent.com/render/math?math=t_n)
 - One line for each particle with its position and speed (decomposed in x and y), separated by spaces
