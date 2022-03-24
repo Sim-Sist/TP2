@@ -1,5 +1,5 @@
 #!/bin/bash
-mainClass=App
+mainClass=Main
 
 scriptDir=`dirname $0`
 classDir=${scriptDir}/../bin;
