@@ -19,7 +19,8 @@ public class Space {
     private final double DEFAULT_MIN_VELOCITY = 0.3, DEFAULT_MAX_VELOCITY = 1;
     private double minVelocity = DEFAULT_MIN_VELOCITY, maxVelocity = DEFAULT_MAX_VELOCITY;
     private OutputManager oManager;
-
+    private int step = 0;
+    private final double NOISE = 1;
 
     // Defaults to random radii between 1 and 10, and default random velocities
     // between 0.3 and 1
@@ -99,9 +100,21 @@ public class Space {
                 particles[i] = p;
             }
         }
+        outputInitialState();
+        outputNextState();
+        step++;
     }
 
-    public void calculateCells() {
+    public void computeNextStep() {
+        calculateNeighbours();
+        for (Particle p : particles) {
+            p.move(neighboursSet[p.getIndex()].stream().map(index -> particles[index]).toList(), NOISE);
+        }
+        outputNextState();
+        step++;
+    }
+
+    public void calculateNeighbours() {
         neighboursSet = CellIndexMethod.apply(this);
     }
 
@@ -127,9 +140,9 @@ public class Space {
         }
     }
 
-    public void outputNeighbours() {
-        if (!this.oManager.outputNeighbours()) {
-            System.out.println("There was an error while generating neighbour particles' output");
+    private void outputNextState() {
+        if (!this.oManager.outputState(step)) {
+            System.out.println("There was an error while generating dynamic states' output");
         }
     }
 

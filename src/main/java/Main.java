@@ -21,9 +21,11 @@ public class Main {
         s.setRadii(MIN_RADIUS, MAX_RADIUS);
         s.initialize();
         System.out.println(s);
-        s.calculateCells();
+        s.calculateNeighbours();
         s.outputInitialState();
-        s.outputNeighbours();
+        for (int i = 0; i < 10; i++) {
+            s.computeNextStep();
+        }
     }
 
     public static void test() {
