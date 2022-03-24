@@ -2,8 +2,6 @@ package particles;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Set;
 
 public class Particle {
     private int index;
@@ -27,19 +25,47 @@ public class Particle {
         this.radius = radius;
     }
 
-    public void move(List<Particle> particles, int particleCount) {
+    public void moveWithAllForces(List<Particle> particles, int particleCount, double noise) {
         if (particleCount == 0)
             return;
 
-        double meanAngle = 0;
+        double meanVelocityAngle = 0;
+        double meanPositionAngle = 0;
+        double meanSeparationAngle = 0;
+
         for (Particle other : particles) {
-            meanAngle += Math.atan2(other.getVy(), other.getVx());
+            meanVelocityAngle += Math.atan2(other.getVy(), other.getVx());
+            meanPositionAngle += Math.atan2(other.getY(), other.getX());
+            meanSeparationAngle += Math.atan2((other.getY() - this.getY()) / this.distanceTo(other),
+                    (other.getX() - this.getX()) / this.distanceTo(other));
         }
 
-        meanAngle /= particleCount;
+        meanVelocityAngle /= particleCount;
+        meanPositionAngle /= particleCount;
+        meanSeparationAngle /= particleCount;
 
-        this.vx = VELOCITY_MAGNITUDE * Math.cos(meanAngle) + this.vx;
-        this.vy = VELOCITY_MAGNITUDE * Math.sin(meanAngle) + this.vy;
+        double meanAngle = (meanVelocityAngle + meanPositionAngle + meanSeparationAngle) / 3;
+
+        this.vx = VELOCITY_MAGNITUDE * Math.cos(meanAngle + noise) + this.vx;
+        this.vy = VELOCITY_MAGNITUDE * Math.sin(meanAngle + noise) + this.vy;
+
+        this.update();
+    }
+
+    public void move(List<Particle> particles, int particleCount, double noise) {
+        if (particleCount == 0)
+            return;
+
+        double meanVelocityAngle = 0;
+
+        for (Particle other : particles) {
+            meanVelocityAngle += Math.atan2(other.getVy(), other.getVx());
+        }
+
+        meanVelocityAngle /= particleCount;
+
+        this.vx = VELOCITY_MAGNITUDE * Math.cos(meanVelocityAngle + noise) + this.vx;
+        this.vy = VELOCITY_MAGNITUDE * Math.sin(meanVelocityAngle + noise) + this.vy;
 
         this.update();
     }
@@ -70,6 +96,14 @@ public class Particle {
 
     public double getVy() {
         return vy;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
     }
 
     public double distanceTo(Particle p) {
