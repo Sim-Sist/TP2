@@ -1,54 +1,63 @@
 package particles;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
+
 import java.util.Random;
 import java.util.Set;
 
+import output.OutputManager;
 import particles.cim.CellIndexMethod;
 
 public class Space {
-    private double height, width;
+    private double size;
     private Particle[] particles;
     private double criticalRadius = 50;
-    private Set<Integer>[] neighbours;
+    private Set<Integer>[] neighboursSet;
+    private Double constantRadius = null;
+    private Double constantVelocity = null;
     private final double DEFAULT_MIN_RADIUS = 1, DEFAULT_MAX_RADIUS = 10;
     private double minRadius = DEFAULT_MIN_RADIUS, maxRadius = DEFAULT_MAX_RADIUS;
-    private final String INIT_STATE_DEFAULT_FILENAME = "particles.txt";
-    private final String NEIGHBOURS_DEFAULT_FILENAME = "neighbours.txt";
+    private final double DEFAULT_MIN_VELOCITY = 0.3, DEFAULT_MAX_VELOCITY = 1;
+    private double minVelocity = DEFAULT_MIN_VELOCITY, maxVelocity = DEFAULT_MAX_VELOCITY;
+    private OutputManager oManager;
 
-    public Space(double size) {
-        this(size, size);
+
+    // Defaults to random radii between 1 and 10, and default random velocities
+    // between 0.3 and 1
+    public Space(double size, double criticalRadius, int particlesAmount) {
+        this.size = size;
+        this.criticalRadius = criticalRadius;
+        this.particles = new Particle[particlesAmount];
+        this.oManager = new OutputManager(this);
     }
 
-    private Space(double height, double width) {
-        this.height = height;
-        this.width = width;
+    // Sets constant radius for all particles
+    public void setRadii(double constantRadius) {
+        this.constantRadius = constantRadius;
     }
 
-    // Particles with random radiuses
-    public void initialize(int particlesAmount) {
-        this.initialize(particlesAmount, null);
-    }
-
-    // Particles with defined constant radius
-    public void initialize(int particlesAmount, Double particleRadius) {
-        particles = new Particle[particlesAmount];
-        generateSystem(particlesAmount, particleRadius);
-    }
-
-    public void setCriticalRadius(double radius) {
-        this.criticalRadius = radius;
-    }
-
-    public void setRadiusLimits(double min, double max) {
-        if (min < 0 || min > max)
+    // Sets particles' radii as a random number between minRadius and maxRadius
+    public void setRadii(double minRadius, double maxRadius) {
+        this.constantRadius = null;// turn off constant radii
+        if (minRadius < 0 || minRadius > maxRadius)
             throw new RuntimeException("Invalid values for radius' limits");
-        this.minRadius = min;
-        this.maxRadius = max;
+        this.minRadius = minRadius;
+        this.maxRadius = maxRadius;
+    }
+
+    public void setVelocities(double constantVelocity) {
+        this.constantVelocity = constantVelocity;
+    }
+
+    public void setVelocities(double minVelocity, double maxVelocity) {
+        this.constantVelocity = null;
+        if (minVelocity < 0 || minVelocity > maxVelocity)
+            throw new RuntimeException("Invalid values for radius' limits");
+        this.minVelocity = minVelocity;
+        this.maxVelocity = maxVelocity;
+    }
+
+    public void initialize() {
+        generateSystem();
     }
 
     private boolean overlaps(Particle p) {
@@ -61,14 +70,25 @@ public class Space {
         return false;
     }
 
-    private void generateSystem(int particlesAmount, Double particleRadius) {
+    private void generateSystem() {
         Random rnd = new Random();
-        for (int i = 0; i < particlesAmount; i++) {
-            double radius = (particleRadius == null) ? (rnd.nextDouble() * (maxRadius - minRadius) + minRadius)
-                    : particleRadius;
-            Particle p = new Particle(i, rnd.nextDouble() * width, rnd.nextDouble() * height, 0.0, 0.0, 0.0, 0.0,
+        for (int i = 0; i < particles.length; i++) {
+            double radius = (constantRadius == null) ? (rnd.nextDouble() * (maxRadius - minRadius) + minRadius)
+                    : constantRadius;
+            double velocity = (constantVelocity == null)
+                    ? (rnd.nextDouble() * (maxVelocity - minVelocity) + minVelocity)
+                    : constantVelocity;
+            double speedAngle = rnd.nextDouble() * (2 * Math.PI);
+            Particle p = new Particle(
+                    i, // index
+                    rnd.nextDouble() * size, // x
+                    rnd.nextDouble() * size, // y
+                    velocity * Math.cos(speedAngle), // vx
+                    velocity * Math.sin(speedAngle), // vy
+                    0.0, // ax
+                    0.0, // ay
                     radius);
-            if (p.x < p.radius || (p.x + p.radius) > this.width || p.y < p.radius || (p.y + p.radius) > height) {
+            if (p.x < p.radius || (p.x + p.radius) > this.size || p.y < p.radius || (p.y + p.radius) > size) {
                 i--;
                 continue;
             }
@@ -82,101 +102,35 @@ public class Space {
     }
 
     public void calculateCells() {
-        neighbours = CellIndexMethod.apply(height, criticalRadius, particles);
+        neighboursSet = CellIndexMethod.apply(this);
     }
 
-    public void calculateCells(int gridSize) {
-        neighbours = CellIndexMethod.apply(height, criticalRadius, particles, gridSize);
+    public double getSize() {
+        return size;
     }
 
-    private String getRoot() {
-        URL u = getClass().getProtectionDomain().getCodeSource().getLocation();
-        return (u.toString().replace("file:", "").replace("bin/", ""));
+    public Particle[] getParticles() {
+        return particles;
     }
 
-    public boolean outputInitialState() {
-        return this.outputInitialState(INIT_STATE_DEFAULT_FILENAME);
+    public double getCriticalRadius() {
+        return criticalRadius;
     }
 
-    public boolean outputInitialState(String filename) {
-        FileWriter fw;
-        try {
-            String filepath = getRoot() + "src/main/output/";
-            File file = new File(filepath, filename);
-            file.createNewFile();
-            fw = new FileWriter(file);
+    public Set<Integer>[] getNeighbours() {
+        return neighboursSet;
+    }
 
-            /**
-             * Header stile goes like:
-             * - Number of particles
-             * - Size of Space
-             * - Length of critical radius
-             * - One free line to put a comment/name. This can also be left blank.
-             */
-            fw.append(Integer.toString(particles.length)).append('\n');
-            fw.append(Double.toString(height)).append('\n');
-            fw.append(Double.toString(criticalRadius)).append('\n');
-            fw.append('\n');
-
-            /**
-             * Body of textfile consists of one line for each particle
-             * with its radius and then its xy coordinates, all separated by a spaces
-             */
-            for (Particle p : particles) {
-                fw.append(String.format("%f %f %f\n", p.radius, p.x, p.y));
-            }
-
-            fw.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
+    public void outputInitialState() {
+        if (!this.oManager.outputInitialState()) {
+            System.out.println("There was an error while generating initial's stat output");
         }
-        return true;
     }
 
-    public boolean outputNeighbours() {
-        return this.outputNeighbours(NEIGHBOURS_DEFAULT_FILENAME);
-    }
-
-    public boolean outputNeighbours(String filename) {
-        if (neighbours == null) {
-            return false;
+    public void outputNeighbours() {
+        if (!this.oManager.outputNeighbours()) {
+            System.out.println("There was an error while generating neighbour particles' output");
         }
-        FileWriter fw;
-        int defaultTarget = 1;
-        try {
-            String filepath = getRoot() + "src/main/output/";
-            File file = new File(filepath, filename);
-            file.createNewFile();
-            fw = new FileWriter(file);
-
-            /**
-             * Header stile goes like:
-             * - One free line to put a comment/name. This can also be left blank.
-             */
-            fw.append('\n');
-
-            /**
-             * Body of textfile consists of one line for each particle
-             * with a list of all its neighbours separated by a space
-             */
-            for (Set<Integer> s : neighbours) {
-                StringBuilder sb = new StringBuilder();
-                for (Integer n : s) {
-                    sb.append(n).append(" ");
-                }
-                if (sb.length() > 0)
-                    sb.deleteCharAt(sb.length() - 1); // Delete last space
-                sb.append('\n');
-                fw.append(sb.toString());
-            }
-
-            fw.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-        return true;
     }
 
     @Override
