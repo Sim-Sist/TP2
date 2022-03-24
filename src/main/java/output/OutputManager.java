@@ -11,8 +11,9 @@ import particles.Space;
 
 public class OutputManager {
     private Space s;
-    private final String INIT_STATE_DEFAULT_FILENAME = "particles.txt";
-    private final String NEIGHBOURS_DEFAULT_FILENAME = "neighbours.txt";
+    private final String INIT_STATE_DEFAULT_FILENAME = "static-infoparticles.txt";
+    private final String DYNAMIC_STATE_DEFAULT_FILENAME = "dynamic-info.txt";
+    private final String LOCAL_OUTPUT_PATH = "src/main/output/";
 
     public OutputManager(Space s) {
         this.s = s;
@@ -30,7 +31,7 @@ public class OutputManager {
     public boolean outputInitialState(String filename) {
         FileWriter fw;
         try {
-            String filepath = getRoot() + "src/main/output/";
+            String filepath = getRoot() + LOCAL_OUTPUT_PATH;
             File file = new File(filepath, filename);
             file.createNewFile();
             fw = new FileWriter(file);
@@ -48,12 +49,11 @@ public class OutputManager {
             fw.append('\n');
 
             /**
-             * Body of textfile consists of one line for each particle
-             * with its radius and then its xy coordinates, all separated by a spaces
+             * Body of textfile consists of one line for each particle with its radius
              */
 
             for (Particle p : s.getParticles()) {
-                fw.append(String.format("%f %f %f\n", p.radius, p.x, p.y));
+                fw.append(String.format("%f\n", p.radius));
             }
 
             fw.close();
@@ -64,43 +64,35 @@ public class OutputManager {
         return true;
     }
 
-    public boolean outputNeighbours() {
-        return this.outputNeighbours(NEIGHBOURS_DEFAULT_FILENAME);
-    }
-
-    public boolean outputNeighbours(String filename) {
-        if (s.getNeighbours() == null) {
-            return false;
+    public boolean outputState(int tn) {
+        String path = getRoot() + LOCAL_OUTPUT_PATH;
+        File f = new File(path, DYNAMIC_STATE_DEFAULT_FILENAME);
+        if (!f.exists()) {
+            try {
+                f.createNewFile();
+            } catch (IOException e) {
+                System.out.println("There was an error while creating output file:\n");
+                e.printStackTrace();
+                return false;
+            }
         }
         FileWriter fw;
-        int defaultTarget = 1;
         try {
-            String filepath = getRoot() + "src/main/output/";
-            File file = new File(filepath, filename);
-            file.createNewFile();
-            fw = new FileWriter(file);
+            fw = new FileWriter(f, true);
 
             /**
-             * Header stile goes like:
-             * - One free line to put a comment/name. This can also be left blank.
+             * This file contains a list of entries, each one for a specific time tn. Each
+             * entry goes like:
+             * 
+             * - tn
+             * - One line for each particle with its position and speed (decomposed in x and
+             * y), separated by spaces
              */
-            fw.append('\n');
 
-            /**
-             * Body of textfile consists of one line for each particle
-             * with a list of all its neighbours separated by a space
-             */
-            for (Set<Integer> s : s.getNeighbours()) {
-                StringBuilder sb = new StringBuilder();
-                for (Integer n : s) {
-                    sb.append(n).append(" ");
-                }
-                if (sb.length() > 0)
-                    sb.deleteCharAt(sb.length() - 1); // Delete last space
-                sb.append('\n');
-                fw.append(sb.toString());
+            fw.append(Integer.toString(tn)).append('\n');
+            for (Particle p : s.getParticles()) {
+                fw.append(String.format("%f %f %f %f\n", p.x, p.y, p.vx, p.vy));
             }
-
             fw.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -108,4 +100,5 @@ public class OutputManager {
         }
         return true;
     }
+
 }

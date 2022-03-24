@@ -25,7 +25,8 @@ public class Particle {
         this.radius = radius;
     }
 
-    public void moveWithAllForces(List<Particle> particles, int particleCount, double noise) {
+    public void moveWithAllForces(List<Particle> particles, double noise) {
+        int particleCount = particles.size();
         if (particleCount == 0)
             return;
 
@@ -52,7 +53,8 @@ public class Particle {
         this.update();
     }
 
-    public void move(List<Particle> particles, int particleCount, double noise) {
+    public void move(List<Particle> particles, double noise) {
+        int particleCount = particles.size();
         if (particleCount == 0)
             return;
 
