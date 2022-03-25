@@ -109,6 +109,19 @@ public class Space {
         calculateNeighbours();
         for (Particle p : particles) {
             p.move(neighboursSet[p.getIndex()].stream().map(index -> particles[index]).toList(), NOISE);
+            // TODO! adjust movement for collisions
+            if (p.x < p.radius) {
+                p.x = p.radius;
+            }
+            if (p.y < p.radius) {
+                p.y = p.radius;
+            }
+            if (p.x > (size - p.radius)) {
+                p.x = (size - p.radius);
+            }
+            if (p.y > (size - p.radius)) {
+                p.y = (size - p.radius);
+            }
         }
         outputNextState();
         step++;
