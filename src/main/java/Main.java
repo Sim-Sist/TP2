@@ -1,15 +1,10 @@
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import particles.Space;
 
 public class Main {
-    private static final double SIZE = 2;
-    private static final int PARTICLES = 8;
-    private static final double RADIUS = .2;
-    private static final double MIN_RADIUS = .1, MAX_RADIUS = .2;
+    private static final double SIZE = 20;
+    private static final int PARTICLES = 10;
+    private static final double RADIUS = .5;
+    private static final double MIN_RADIUS = .1, MAX_RADIUS = .5;
 
     public static void main(String[] args) {
         Space s = new Space(SIZE, RADIUS, PARTICLES);

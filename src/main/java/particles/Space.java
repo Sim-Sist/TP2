@@ -1,8 +1,8 @@
 package particles;
 
-
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import output.OutputManager;
 import particles.cim.CellIndexMethod;
