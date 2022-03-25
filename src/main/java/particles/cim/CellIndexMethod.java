@@ -44,7 +44,7 @@ public class CellIndexMethod {
                 : (p1, p2) -> p1.distanceTo(p2);
 
         if (DEBUG)
-            System.out.println(String.format("CIM:\n\tSpace size: %.3f\n\tCells per side: %d\n", gridSize, gridSize));
+            System.out.println(String.format("CIM:\n\tSpace size: %.3f\n\tCells per side: %d\n", spaceSize, gridSize));
 
         // Initialize arrays
         cells = new int[gridSize * gridSize];
@@ -154,8 +154,8 @@ public class CellIndexMethod {
     // }
 
     private static int getCell(Particle particle) {
-        int x = (int) (particle.x / gridSize * gridSize);
-        int y = (int) (particle.y / gridSize * gridSize);
+        int x = (int) (particle.x / spaceSize * gridSize);
+        int y = (int) (particle.y / spaceSize * gridSize);
         int cell = y * gridSize + x;
         if (DEBUG)
             System.out.println(String.format("For particle %d, its position on the grid is: %d %d. So it's in cell %d",
