@@ -1,8 +1,8 @@
 package particles;
 
-
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import output.OutputManager;
 import particles.cim.CellIndexMethod;
@@ -108,7 +108,8 @@ public class Space {
     public void computeNextStep() {
         calculateNeighbours();
         for (Particle p : particles) {
-            p.move(neighboursSet[p.getIndex()].stream().map(index -> particles[index]).toList(), NOISE);
+            p.move(neighboursSet[p.getIndex()].stream().map(index -> particles[index]).collect(Collectors.toList()),
+                    NOISE);
         }
         outputNextState();
         step++;

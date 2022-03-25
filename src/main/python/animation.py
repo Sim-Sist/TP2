@@ -12,13 +12,13 @@ import math
 
 
 def readStatic():
-    with open('./output/static-info.txt') as info:
+    with open('../output/static-infoparticles.txt') as info:
         for line in info:
             yield line
 
 
 def readDynamic():
-    with open('./output/dynamic-info.txt') as info:
+    with open('../output/dynamic-info.txt') as info:
         for line in info:
             yield line
 
@@ -46,10 +46,11 @@ RC = criticalRadio
 
 
 def getParticlesStaticInfo():
-    index = 0
-    radiosLine = static.__next__().split(' ')
     for index in range(cantParticles):
-        radios.append(float(radiosLine[index]))
+        radios.append(float(static.__next__()))
+
+
+getParticlesStaticInfo()
 
 
 def stringCompatible(str):
@@ -58,13 +59,16 @@ def stringCompatible(str):
     return -1
 
 
-def initializeParticle():
+def updateParticles():
+    frame = dynamic.__next__()
     for index in range(cantParticles):
 
-        parsedInfo = set(map(lambda str: stringCompatible(
+        parsedInfo = list(map(lambda str: float(
             str), dynamic.__next__().split(' ')))
 
-        # Aca tambien estaria la velocidad y eso cuando haga falta
+        print(frame)
+        print(parsedInfo)
+
         position = [parsedInfo[0], parsedInfo[1]]
         velocity = [parsedInfo[2], parsedInfo[3]]
 
@@ -94,37 +98,30 @@ class Particle:
         no_stroke()
         fill(color)
         circle(self.x, self.y, self.d)
-        fill('#ffffff')
-        text_align('CENTER')
-        text(
-            str(self.id),
-            self.x,
-            self.y,
-        )
+        stroke(selectedColor)
+        stroke_weight(1)
+        line(self.x, self.y, self.x + self.vx * 10, self.y + self.vy * 10)
 
     def draw(self):
         self.drawWithColor(self.color)
 
 
-particles = []
-for particle in initializeParticle():
-    particles.append(particle)
-
-
 def drawParticles():
-    for particle in particles:
+    for particle in updateParticles():
         particle.draw()
 
 
 def setup():
     size(canvasSize, canvasSize)
     no_stroke()
-    no_loop()
 
 
 def draw():
     background(backgroundColor)
     drawParticles()
 
+    if(frame_count == 2):
+        no_loop()
 
-run()
+
+run(frame_rate=1)
