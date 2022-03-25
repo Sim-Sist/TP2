@@ -1,5 +1,9 @@
 package particles;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -11,7 +15,7 @@ public class Space {
     private double size;
     private Particle[] particles;
     private double criticalRadius = 50;
-    private Set<Integer>[] neighboursSet;
+    private Set<Integer>[] neighboursSetArray;
     private Double constantRadius = null;
     private Double constantVelocity = null;
     private final double DEFAULT_MIN_RADIUS = 1, DEFAULT_MAX_RADIUS = 10;
@@ -84,8 +88,8 @@ public class Space {
                     i, // index
                     rnd.nextDouble() * size, // x
                     rnd.nextDouble() * size, // y
-                    velocity * Math.cos(speedAngle), // vx
-                    velocity * Math.sin(speedAngle), // vy
+                    velocity, // velocity
+                    speedAngle, // speedAngle
                     0.0, // ax
                     0.0, // ay
                     radius);
@@ -105,30 +109,52 @@ public class Space {
         step++;
     }
 
+    @SuppressWarnings("unchecked")
     public void computeNextStep() {
         calculateNeighbours();
+        List<Double>[] oldAngles = (List<Double>[]) new LinkedList[particles.length];
+        for (int i = 0; i < neighboursSetArray.length; i++) {
+            oldAngles[i] = new LinkedList<>(
+                    neighboursSetArray[i].stream().map(pIndex -> particles[pIndex].speedAngle).toList());
+            oldAngles[i].add(particles[i].speedAngle);
+        }
+
         for (Particle p : particles) {
-            p.move(neighboursSet[p.getIndex()].stream().map(index -> particles[index]).toList(), NOISE);
+            p.move(oldAngles[p.getIndex()], NOISE);
             // TODO! adjust movement for collisions
-            if (p.x < p.radius) {
-                p.x = p.radius;
+            // if (p.x < p.radius) {
+            // p.x = p.radius;
+            // }
+            // if (p.y < p.radius) {
+            // p.y = p.radius;
+            // }
+            // if (p.x > (size - p.radius)) {
+            // p.x = (size - p.radius);
+            // }
+            // if (p.y > (size - p.radius)) {
+            // p.y = (size - p.radius);
+            // }
+
+            if (p.x < 0) {
+                p.x = p.x + size;
             }
-            if (p.y < p.radius) {
-                p.y = p.radius;
+            if (p.y < 0) {
+                p.y = p.y + size;
             }
-            if (p.x > (size - p.radius)) {
-                p.x = (size - p.radius);
+            if (p.x > size) {
+                p.x = p.x - size;
             }
-            if (p.y > (size - p.radius)) {
-                p.y = (size - p.radius);
+            if (p.y > size) {
+                p.y = p.y - size;
             }
+
         }
         outputNextState();
         step++;
     }
 
     public void calculateNeighbours() {
-        neighboursSet = CellIndexMethod.apply(this);
+        neighboursSetArray = CellIndexMethod.apply(this);
     }
 
     public double getSize() {
@@ -144,7 +170,7 @@ public class Space {
     }
 
     public Set<Integer>[] getNeighbours() {
-        return neighboursSet;
+        return neighboursSetArray;
     }
 
     public void outputInitialState() {

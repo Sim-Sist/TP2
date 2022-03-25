@@ -10,7 +10,7 @@ import particles.Space;
 
 public class OutputManager {
     private Space s;
-    private final String INIT_STATE_DEFAULT_FILENAME = "static-infoparticles.txt";
+    private final String INIT_STATE_DEFAULT_FILENAME = "static-info.txt";
     private final String DYNAMIC_STATE_DEFAULT_FILENAME = "dynamic-info.txt";
     private final String LOCAL_OUTPUT_PATH = "src/main/output/";
 
@@ -66,7 +66,12 @@ public class OutputManager {
     public boolean outputState(int tn) {
         String path = getRoot() + LOCAL_OUTPUT_PATH;
         File f = new File(path, DYNAMIC_STATE_DEFAULT_FILENAME);
-        if (!f.exists()) {
+        if (tn == 0) {
+            try {
+                f.delete();
+            } catch (SecurityException e) {
+
+            }
             try {
                 f.createNewFile();
             } catch (IOException e) {
@@ -90,7 +95,7 @@ public class OutputManager {
 
             fw.append(Integer.toString(tn)).append('\n');
             for (Particle p : s.getParticles()) {
-                fw.append(String.format("%f %f %f %f\n", p.x, p.y, p.vx, p.vy));
+                fw.append(String.format("%f %f %f %f\n", p.x, p.y, p.getVx(), p.getVy()));
             }
             fw.close();
         } catch (IOException e) {

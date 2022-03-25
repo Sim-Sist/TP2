@@ -5,21 +5,19 @@ import java.util.ArrayList;
 
 public class Particle {
     private int index;
-    public double x, y, vx, vy, ax, ay;
+    public double velocity, speedAngle;
+    public double x, y, ax, ay;
     public double radius;
-    private final Double VELOCITY_MAGNITUDE = 0.03;
 
-    public Particle(int index, double x, double y, double vx, double vy, double ax, double ay, double radius) {
+    public Particle(int index, double x, double y, double velocity, double speedAngle, double ax, double ay,
+            double radius) {
         this.index = index;
         this.x = x;
         this.y = y;
 
-        double angle = Math.atan2(vy, vx);
-        this.vx = VELOCITY_MAGNITUDE * Math.cos(angle) + vx;
-        this.vy = VELOCITY_MAGNITUDE * Math.sin(angle) + vy;
+        this.velocity = velocity;
+        this.speedAngle = speedAngle;
 
-        this.vx = vx;
-        this.vy = vy;
         this.ax = ax;
         this.ay = ay;
         this.radius = radius;
@@ -30,74 +28,71 @@ public class Particle {
         if (particleCount == 0)
             return;
 
-        double meanVelocityAngle = 0;
-        double meanPositionAngle = 0;
-        double meanSeparationAngle = 0;
+        // double meanVelocityAngle = 0;
+        // double meanPositionAngle = 0;
+        // double meanSeparationAngle = 0;
 
-        for (Particle other : particles) {
-            meanVelocityAngle += Math.atan2(other.getVy(), other.getVx());
-            meanPositionAngle += Math.atan2(other.getY(), other.getX());
-            meanSeparationAngle += Math.atan2((other.getY() - this.getY()) / this.distanceTo(other),
-                    (other.getX() - this.getX()) / this.distanceTo(other));
-        }
+        // double sinAvg = particles.stream().mapToDouble(p ->
+        // Math.sin(p.speedAngle)).average().getAsDouble();
+        // double cosAvg = particles.stream().mapToDouble(p ->
+        // Math.cos(p.speedAngle)).average().getAsDouble();
 
-        meanVelocityAngle /= particleCount;
-        meanPositionAngle /= particleCount;
-        meanSeparationAngle /= particleCount;
+        // meanVelocityAngle = Math.atan2(sinAvg, cosAvg);
 
-        double meanAngle = (meanVelocityAngle + meanPositionAngle + meanSeparationAngle) / 3;
+        // for (Particle other : particles) {
+        // meanVelocityAngle += Math.atan2(other.getVy(), other.getVx());
+        // meanPositionAngle += Math.atan2(other.getY(), other.getX());
+        // meanSeparationAngle += Math.atan2((other.getY() - this.getY()) /
+        // this.distanceTo(other),
+        // (other.getX() - this.getX()) / this.distanceTo(other));
+        // }
 
-        this.vx = VELOCITY_MAGNITUDE * Math.cos(meanAngle + noise) + this.vx;
-        this.vy = VELOCITY_MAGNITUDE * Math.sin(meanAngle + noise) + this.vy;
+        // meanVelocityAngle /= particleCount;
+        // meanPositionAngle /= particleCount;
+        // meanSeparationAngle /= particleCount;
+
+        // double meanAngle = (meanVelocityAngle + meanPositionAngle +
+        // meanSeparationAngle) / 3;
+
+        // this.vx = VELOCITY_MAGNITUDE * Math.cos(meanAngle + noise) + this.vx;
+        // this.vy = VELOCITY_MAGNITUDE * Math.sin(meanAngle + noise) + this.vy;
 
         this.update();
     }
 
-    public void move(List<Particle> particles, double noise) {
-        int particleCount = particles.size();
-        if (particleCount == 0)
-            return;
-
-        double meanVelocityAngle = 0;
-
-        for (Particle other : particles) {
-            meanVelocityAngle += Math.atan2(other.getVy(), other.getVx());
-        }
-
-        meanVelocityAngle /= particleCount;
-
-        this.vx = VELOCITY_MAGNITUDE * Math.cos(meanVelocityAngle + noise) + this.vx;
-        this.vy = VELOCITY_MAGNITUDE * Math.sin(meanVelocityAngle + noise) + this.vy;
-
+    public void move(List<Double> neighbourAngles, double noise) {
+        int particleCount = neighbourAngles.size();
         this.update();
+        if (particleCount == 0) {
+            return;
+        }
+        double sinAvg = neighbourAngles.stream().mapToDouble(a -> Math.sin(a)).average().getAsDouble();
+        double cosAvg = neighbourAngles.stream().mapToDouble(a -> Math.cos(a)).average().getAsDouble();
+
+            this.speedAngle = Math.atan2(sinAvg, cosAvg);
+
     }
 
     public void update() {
         // Position
-        this.x = this.x + this.vx;
-        this.y = this.y + this.vy;
-        // Velocity
-        this.vx = this.vx + this.ax;
-        this.vy = this.vy + this.ay;
+        this.x = this.x + this.velocity * Math.cos(this.speedAngle);
+        this.y = this.y + this.velocity * Math.sin(this.speedAngle);
     }
 
     public int getIndex() {
         return index;
     }
 
-    public List<Double> getVelocity() {
-        List<Double> velocity = new ArrayList<>();
-        velocity.add(this.vx);
-        velocity.add(this.vy);
-        return velocity;
+    public double getVelocity() {
+        return this.velocity;
     }
 
     public double getVx() {
-        return vx;
+        return velocity * Math.cos(this.speedAngle);
     }
 
     public double getVy() {
-        return vy;
+        return velocity * Math.sin(this.speedAngle);
     }
 
     public double getX() {

@@ -1,19 +1,22 @@
 import particles.Space;
 
 public class Main {
-    private static final double SIZE = 20;
-    private static final int PARTICLES = 10;
-    private static final double RADIUS = .5;
-    private static final double MIN_RADIUS = .1, MAX_RADIUS = .5;
+    private static final double SIZE = 30;
+    private static final int PARTICLES = 100;
+    private static final double CRITICAL_RADIUS = 1;
+    private static final double MIN_RADIUS = 1, MAX_RADIUS = 2;
+    private static final double CONSTANT_RADIUS = .3;
+    private static final double VELOCITY = 0.5;
 
     public static void main(String[] args) {
-        Space s = new Space(SIZE, RADIUS, PARTICLES);
-        s.setRadii(MIN_RADIUS, MAX_RADIUS);
+        Space s = new Space(SIZE, CRITICAL_RADIUS, PARTICLES);
+        s.setRadii(CONSTANT_RADIUS);
+        s.setVelocities(VELOCITY);
         s.initialize();
-        System.out.println(s);
         s.calculateNeighbours();
         s.outputInitialState();
-        for (int i = 0; i < 10; i++) {
+        System.out.println(s);
+        for (int i = 0; i < 100; i++) {
             s.computeNextStep();
         }
     }
