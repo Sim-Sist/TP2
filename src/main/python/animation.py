@@ -77,9 +77,9 @@ def initializeParticles():
         )
 
 
-@lru_cache(maxsize=None)
-def shape(d, color):
-    return Arc((0, 0), (d / 2, ) * 2, 0, 360, fill_color=color)
+# @lru_cache(maxsize=None)
+# def shape(d, color):
+#     return Arc((0, 0), (d / 2, ) * 2, 0, 360, fill_color=color)
 
 
 def updateParticles():
@@ -114,18 +114,26 @@ class Particle:
         self.color = color
 
     def drawWithColor(self, color):
-        no_stroke()
-        fill(color)
-        translate(self.x, self.y)
-        draw_shape(shape(self.d, color))
-        translate(-self.x, -self.y)
+        theta = atan2(self.vy, self.vx) + radians(90)
+        if(self.d == 0):
+            r = 1
+        else:
+            r = self.d / 2
 
-        # no_stroke()
-        # fill(color)
-        # circle(self.x, self.y, self.d)
-        # stroke(neighbourColor)
-        # stroke_weight(2)
-        # line(self.x, self.y, self.x + self.vx * 20, self.y + self.vy * 20)
+        color_mode('HSB', 360, 100, 100)
+        #angle = ((atan2(self.vy, self.vx) + PI) / (2 * PI)) * 360
+        fill(69, 100, 100)
+        stroke(69, 60, 100)
+
+        push_matrix()
+        translate(self.x, self.y)
+        rotate(theta)
+        begin_shape()
+        vertex(0, -r * 2)
+        vertex(-r, r * 2)
+        vertex(r, r * 2)
+        end_shape(CLOSE)
+        push_matrix()
 
     def draw(self):
         self.drawWithColor(self.color)
@@ -146,9 +154,9 @@ initializeParticles()
 
 
 def drawParticles():
-    start = time()
+    #start = time()
     updateParticles()
-    print(time() - start)
+    #print(time() - start)
 
     # for particle in particles:
     #    particle.draw()
@@ -162,14 +170,14 @@ def setup():
 
 def draw():
     print("Draw")
-    background(backgroundColor)
+    background(0, 5, 5)
     drawParticles()
 
-    # save_frame("images/000.png")
+    save_frame("images/000.png")
 
-    if(frame_count == 50):
+    if(frame_count == 600):
         no_loop()
         exit()
 
 
-run(frame_rate=50)
+run()
