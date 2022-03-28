@@ -20,6 +20,8 @@ public class CellIndexMethod {
     private static int gridSize;
     private static Set<Integer>[] neighbours;
     private static double spaceSize;
+    private static BiFunction<Particle, Particle, Double> computeDistance;
+    private static double criticalRadius;
 
     private static Set<Integer> setsProvider() {
         return new HashSet<>();
@@ -28,32 +30,48 @@ public class CellIndexMethod {
     private CellIndexMethod() {
     }
 
+
     @SuppressWarnings("unchecked")
     public static Set<Integer>[] apply(Space s) {
         Particle[] particles = s.getParticles();
         spaceSize = s.getSize();
-        double criticalRadius = s.getCriticalRadius();
+        criticalRadius = s.getCriticalRadius();
 
         double maxRadius = Arrays.asList(particles).stream().mapToDouble(p -> p.radius).max().getAsDouble();
         gridSize = (int) Math.floor(spaceSize / (criticalRadius + 2 * maxRadius));
 
-        neighbours = (Set<Integer>[]) (new HashSet[particles.length]);
-        Arrays.setAll(neighbours, (i) -> setsProvider());
-        BiFunction<Particle, Particle, Double> computeDistance = periodicBoundary
-                ? (p1, p2) -> getPeriodicDistance(p1, p2)
-                : (p1, p2) -> p1.distanceTo(p2);
+            neighbours = (Set<Integer>[]) (new HashSet[particles.length]);
+            Arrays.setAll(neighbours, (i) -> setsProvider());
+            computeDistance = periodicBoundary
+                    ? (p1, p2) -> getPeriodicDistance(p1, p2)
+                    : (p1, p2) -> p1.distanceTo(p2);
 
-        if (DEBUG)
-            System.out.println(String.format("CIM:\n\tSpace size: %.3f\n\tCells per side: %d\n", spaceSize, gridSize));
+            if (DEBUG)
+                System.out.println(
+                        String.format("CIM:\n\tSpace size: %.3f\n\tCells per side: %d\n", spaceSize, gridSize));
 
-        // Initialize arrays
-        cells = new int[gridSize * gridSize];
-        Arrays.fill(cells, -1);
-        particleRefs = new int[particles.length];
-        Arrays.fill(particleRefs, -1);
+            // Initialize arrays
+            cells = new int[gridSize * gridSize];
+            Arrays.fill(cells, -1);
+            particleRefs = new int[particles.length];
+            Arrays.fill(particleRefs, -1);
+
+            for (Particle p : particles) {
+                computeCellCoordinates(p);
+            }
+
+            // Check in each cell for particles and get distances
+            for (int i = 0; i < cells.length; i++) {
+                computeDistancesInCell(i, particles);
+            }
+
+            if (DEBUG)
+                showResults(cells, particleRefs);
+            return neighbours;
+        }
 
         // Compute cell coordinates for each particle and asign to corresponding array
-        for (Particle p : particles) {
+        private static void computeCellCoordinates(Particle p) {
             int cell = getCell(p);
             int nextParticle = cells[cell];
             if (nextParticle == -1) {
@@ -66,14 +84,13 @@ public class CellIndexMethod {
             }
         }
 
-        // Check in each cell for particles and get distances
-        for (int i = 0; i < cells.length; i++) {
-            if (DEBUG)
-                System.out.println("\nIn Cell " + i + ":");
-            int current = cells[i];
-            while (current != -1) {
-                // Get candidate particles for this cell to measure distance
-                List<Integer> candidates = new LinkedList<>(Arrays.asList(getCandidates(i)));
+    private static void computeDistancesInCell(int cellIndex, Particle[] particles) {
+        if (DEBUG)
+            System.out.println("\nIn Cell " + cellIndex + ":");
+        int current = cells[cellIndex];
+        while (current != -1) {
+            // Get candidate particles for this cell to measure distance
+            List<Integer> candidates = new LinkedList<>(Arrays.asList(getCandidates(cellIndex)));
                 candidates.remove((Integer) current);// Remove current particle to avoid innecesary calculations
                 if (DEBUG) {
                     StringBuilder str = new StringBuilder(String.format("For Particle %d candidates are: ", current));
@@ -96,11 +113,6 @@ public class CellIndexMethod {
 
                 current = particleRefs[current];
             }
-        }
-
-        if (DEBUG)
-            showResults(cells, particleRefs);
-        return neighbours;
     }
 
     private static List<Integer> getCellsToCheck(int cellIndex) {

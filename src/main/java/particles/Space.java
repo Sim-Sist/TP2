@@ -121,20 +121,6 @@ public class Space {
 
         for (Particle p : particles) {
             p.move(oldAngles[p.getIndex()], NOISE);
-            // TODO! adjust movement for collisions
-            // if (p.x < p.radius) {
-            // p.x = p.radius;
-            // }
-            // if (p.y < p.radius) {
-            // p.y = p.radius;
-            // }
-            // if (p.x > (size - p.radius)) {
-            // p.x = (size - p.radius);
-            // }
-            // if (p.y > (size - p.radius)) {
-            // p.y = (size - p.radius);
-            // }
-
             if (p.x < 0) {
                 p.x = p.x + size;
             }
