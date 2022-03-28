@@ -1,6 +1,7 @@
+from functools import lru_cache
 from p5 import *
-
-from asyncore import read
+from p5.core.primitives import Arc
+from time import time
 
 
 def readStatic():
@@ -27,6 +28,7 @@ criticalRadio = float(static.__next__()) * RESIZE_FACTOR
 static.__next__()
 
 radios = []
+particles = []
 
 selectedColor = "#DA2929"
 noSelectedColor = "#3E3B3B"
@@ -42,21 +44,12 @@ def getParticlesStaticInfo():
         radios.append(float(static.__next__()))
 
 
-getParticlesStaticInfo()
-
-
-def stringCompatible(str):
-    if (len(str) > 0 and str != '\n'):
-        return int(str)
-    return -1
-
-
 def initializeParticles():
     frame = dynamic.__next__()
     for index in range(cantParticles):
 
-        parsedInfo = list(map(lambda str: float(
-            str), dynamic.__next__().split(' ')))
+        # parsedInfo = list(map(float, dynamic.__next__().split(' ')))
+        parsedInfo = [float(x) for x in dynamic.__next__().split(' ')]
 
         # print(frame)
         # print(parsedInfo)
@@ -64,26 +57,43 @@ def initializeParticles():
         position = [parsedInfo[0], parsedInfo[1]]
         velocity = [parsedInfo[2], parsedInfo[3]]
 
-        yield Particle(
+        # yield Particle(
+        #     index,
+        #     position[0],
+        #     position[1],
+        #     velocity[0],
+        #     velocity[1],
+        #     2 * radios[index],
+        #     selectedColor
+        # )
+        particles.append(Particle(
             index,
             position[0],
             position[1],
             velocity[0],
             velocity[1],
             2 * radios[index],
-            selectedColor
+            selectedColor)
         )
+
+
+@lru_cache(maxsize=None)
+def shape(d, color):
+    return Arc((0, 0), (d / 2, ) * 2, 0, 360, fill_color=color)
 
 
 def updateParticles():
     frame = dynamic.__next__()
     for index in range(cantParticles):
 
-        parsedInfo = list(map(lambda str: float(
-            str), dynamic.__next__().split(' ')))
+        #start = time()
+        parsedInfo = [float(x) for x in dynamic.__next__().split(' ')]
 
-        print(frame)
-        print(parsedInfo)
+        #parsedInfo = [0, 0, 0, 0]
+
+        #print(time() - start)
+        # print(frame)
+        # print(parsedInfo)
 
         position = [parsedInfo[0], parsedInfo[1]]
         velocity = [parsedInfo[2], parsedInfo[3]]
@@ -106,10 +116,16 @@ class Particle:
     def drawWithColor(self, color):
         no_stroke()
         fill(color)
-        circle(self.x, self.y, self.d)
+        translate(self.x, self.y)
+        draw_shape(shape(self.d, color))
+        translate(-self.x, -self.y)
+
+        # no_stroke()
+        # fill(color)
+        # circle(self.x, self.y, self.d)
         # stroke(neighbourColor)
         # stroke_weight(2)
-        #line(self.x, self.y, self.x + self.vx * 20, self.y + self.vy * 20)
+        # line(self.x, self.y, self.x + self.vx * 20, self.y + self.vy * 20)
 
     def draw(self):
         self.drawWithColor(self.color)
@@ -122,13 +138,18 @@ class Particle:
         self.draw()
 
 
-particles = []
-for particle in initializeParticles():
-    particles.append(particle)
+getParticlesStaticInfo()
+
+# for particle in initializeParticles():
+#    particles.append(particle)
+initializeParticles()
 
 
 def drawParticles():
+    start = time()
     updateParticles()
+    print(time() - start)
+
     # for particle in particles:
     #    particle.draw()
 
@@ -136,14 +157,19 @@ def drawParticles():
 def setup():
     size(canvasSize, canvasSize)
     no_stroke()
+    print("Setup")
 
 
 def draw():
+    print("Draw")
     background(backgroundColor)
-    updateParticles()
+    drawParticles()
 
-    if(frame_count == 100):
+    # save_frame("images/000.png")
+
+    if(frame_count == 50):
         no_loop()
+        exit()
 
 
-run(frame_rate=60)
+run(frame_rate=50)

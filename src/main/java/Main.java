@@ -2,8 +2,8 @@ import particles.Space;
 
 public class Main {
     private static final double SIZE = 30;
-    private static final int PARTICLES = 100;
-    private static final double CRITICAL_RADIUS = 1;
+    private static final int PARTICLES = 600;
+    private static final double CRITICAL_RADIUS = 0.5;
     private static final double MIN_RADIUS = 1, MAX_RADIUS = 2;
     private static final double CONSTANT_RADIUS = .3;
     private static final double VELOCITY = 0.5;
@@ -16,7 +16,7 @@ public class Main {
         s.calculateNeighbours();
         s.outputInitialState();
         System.out.println(s);
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 600; i++) {
             s.computeNextStep();
         }
     }
