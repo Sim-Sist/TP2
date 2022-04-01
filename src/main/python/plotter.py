@@ -7,13 +7,12 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-
 class Plotter:
 
     def __init__(self):
         self.plots = []
 
-    def add_plot(self, title, x_title, y_title, x, y):
+    def add_plot(self, title, x_title, y_title, x, y,error):
         self.plots.append({
             "main_title": title,
             "data": {x_title: x, y_title: y},
@@ -32,7 +31,6 @@ class Plotter:
         plt.show()
 
     def __add_subplot__(self, plots_amount, plot_index):
-        print(plots_amount)
         if(plots_amount <= 2):
             return self.__get_figure__().add_subplot(1, plots_amount, plot_index)
         return self.__get_figure__().add_subplot(2, int(math.ceil(plots_amount/2)), plot_index)
@@ -71,13 +69,3 @@ class Plotter:
         plt.ylabel(current_plot.get("y_label"), fontsize=10)
 
 
-p = Plotter()
-p.add_plot(
-    "Titleee",
-    "This is X",
-    "This is Y",
-    [randint(0, 50), randint(0, 50), randint(0, 50)],
-    [randint(0, 50), randint(0, 50), randint(0, 50)]
-)
-
-p.plot()

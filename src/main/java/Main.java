@@ -1,24 +1,35 @@
-import particles.Space;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
 
+import simulations.SimulationManager;
+
+/*
+    TODO: hacer output de múltiples simulaciones
+    TODO: agregar gráfico con barras de error a la clase Plotter
+    TODO: Extra: Integrar mejor la opción de contorno continuo
+*/
 public class Main {
-    private static final double SIZE = 30;
-    private static final int PARTICLES = 600;
-    private static final double CRITICAL_RADIUS = 0.5;
-    private static final double MIN_RADIUS = 1, MAX_RADIUS = 2;
-    private static final double CONSTANT_RADIUS = .3;
-    private static final double VELOCITY = 0.5;
+
 
     public static void main(String[] args) {
-        Space s = new Space(SIZE, CRITICAL_RADIUS, PARTICLES);
-        s.setRadii(CONSTANT_RADIUS);
-        s.setVelocities(VELOCITY);
-        s.initialize();
-        s.calculateNeighbours();
-        s.outputInitialState();
-        System.out.println(s);
-        for (int i = 0; i < 600; i++) {
-            s.computeNextStep();
+        SimulationManager sManager;
+        if (args.length < 3)
+            sManager = new SimulationManager();
+        else {
+            sManager = new SimulationManager(
+                    Integer.parseInt(args[0]), // particles
+                    Double.parseDouble(args[1]), // size
+                    Double.parseDouble(args[2])); // noise
         }
+        // sManager.simulate();
+
+        sManager.simulationSuiteForNoise(IntStream.range(0, 11).boxed().mapToDouble(i -> i * 0.5).boxed().toList());
     }
 
     public static void test() {

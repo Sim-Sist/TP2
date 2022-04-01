@@ -1,4 +1,3 @@
-
 let static, dynamic;
 
 let cantParticles, canvasSize, criticalRadio;
@@ -7,7 +6,6 @@ let radios = [],
 	particles = [];
 
 RESIZE_FACTOR = 30;
-
 
 function preload() {
 	static = loadStrings('../output/static-info.txt');
@@ -64,17 +62,16 @@ function refresh() {
 	dynamicIndex++;
 }
 
-var capturer
+var capturer;
 let recordAnimation = false;
 let recordingTime = 1; // in seconds MAX:9
 
 function setup() {
-
 	loadStaticData();
 	loadDynamicData();
 	let canvas = createCanvas(canvasSize, canvasSize);
-	canvas.id('canvas')
-	if(recordAnimation){
+	canvas.id('canvas');
+	if (recordAnimation) {
 		capturer = new CCapture({
 			format: 'webm',
 			framerate: 60,
@@ -86,9 +83,8 @@ function setup() {
 }
 
 function draw() {
-
-	if(recordAnimation && frameCount == 1){
-		capturer.start()
+	if (recordAnimation && frameCount == 1) {
+		capturer.start();
 	}
 
 	background(0, 5, 5);
@@ -97,16 +93,16 @@ function draw() {
 	// NO USAR
 	//saveFrames('image' + frameCount , '.png', 1, 5)
 
-	if(recordAnimation){
+	if (recordAnimation) {
 		if (frameCount >= 60 * recordingTime) {
 			noLoop();
-			capturer.stop()
-			capturer.save()
+			capturer.stop();
+			capturer.save();
 			return;
 		}
-		capturer.capture(document.getElementById('canvas'))
+		capturer.capture(document.getElementById('canvas'));
 	}
-	if (frameCount == 600) {
+	if (frameCount == 2000) {
 		noLoop();
 	}
 }
@@ -129,12 +125,11 @@ class Particle {
 		let velocity = createVector(this.vx, this.vy);
 		let theta = velocity.heading() + radians(90);
 		let r;
-		if(this.d == 0)
-			r = 1;
+		if (this.d == 0) r = 1;
 		else {
 			r = this.d / 2;
 		}
-		
+
 		colorMode(HSB, 360, 100, 100);
 		let angle = ((atan2(this.vy, this.vx) + PI) / (2 * PI)) * 360;
 		//console.log(angle)
@@ -163,5 +158,4 @@ class Particle {
 		this.vy = vy;
 		this.draw();
 	}
-
 }
