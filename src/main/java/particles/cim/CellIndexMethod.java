@@ -161,10 +161,6 @@ public class CellIndexMethod {
                 || cell > (gridSize * gridSize - gridSize - 1);
     }
 
-    // private static boolean outOfHorizontalBoundaries(int origin, int target) {
-    // return Math.abs(origin % gridSize - target % gridSize) > 1;
-    // }
-
     private static int getCell(Particle particle) {
         int x = (int) (particle.x / spaceSize * gridSize);
         int y = (int) (particle.y / spaceSize * gridSize);

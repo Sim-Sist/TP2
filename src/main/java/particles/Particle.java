@@ -23,43 +23,6 @@ public class Particle {
         this.radius = radius;
     }
 
-    public void moveWithAllForces(List<Particle> particles, double noise) {
-        int particleCount = particles.size();
-        if (particleCount == 0)
-            return;
-
-        // double meanVelocityAngle = 0;
-        // double meanPositionAngle = 0;
-        // double meanSeparationAngle = 0;
-
-        // double sinAvg = particles.stream().mapToDouble(p ->
-        // Math.sin(p.speedAngle)).average().getAsDouble();
-        // double cosAvg = particles.stream().mapToDouble(p ->
-        // Math.cos(p.speedAngle)).average().getAsDouble();
-
-        // meanVelocityAngle = Math.atan2(sinAvg, cosAvg);
-
-        // for (Particle other : particles) {
-        // meanVelocityAngle += Math.atan2(other.getVy(), other.getVx());
-        // meanPositionAngle += Math.atan2(other.getY(), other.getX());
-        // meanSeparationAngle += Math.atan2((other.getY() - this.getY()) /
-        // this.distanceTo(other),
-        // (other.getX() - this.getX()) / this.distanceTo(other));
-        // }
-
-        // meanVelocityAngle /= particleCount;
-        // meanPositionAngle /= particleCount;
-        // meanSeparationAngle /= particleCount;
-
-        // double meanAngle = (meanVelocityAngle + meanPositionAngle +
-        // meanSeparationAngle) / 3;
-
-        // this.vx = VELOCITY_MAGNITUDE * Math.cos(meanAngle + noise) + this.vx;
-        // this.vy = VELOCITY_MAGNITUDE * Math.sin(meanAngle + noise) + this.vy;
-
-        this.update();
-    }
-
     private static double randomFloat(double minInclusive, double maxInclusive) {
         double precision = 0.00001;
         int max = (int) (maxInclusive / precision);

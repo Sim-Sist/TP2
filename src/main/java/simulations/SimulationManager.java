@@ -1,8 +1,6 @@
 package simulations;
 
 import java.util.List;
-
-import output.SimulationOutputManager;
 import particles.Space;
 
 public class SimulationManager {
@@ -29,20 +27,17 @@ public class SimulationManager {
 
     /**** Class components ****/
     private Space space;
-    private SimulationOutputManager oManager;
 
     public SimulationManager() {
         usedParticlesAmount = PARTICLES;
         usedSize = SIZE;
         usedNoise = NOISE_LIMIT;
-        oManager = new SimulationOutputManager(this);
     }
 
     public SimulationManager(int particlesAmount, double size, double noise) {
         usedParticlesAmount = particlesAmount;
         usedSize = size;
         usedNoise = noise;
-        oManager = new SimulationOutputManager(this);
     }
 
     public void simulate() {
