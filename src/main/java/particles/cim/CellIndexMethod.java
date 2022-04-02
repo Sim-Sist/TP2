@@ -171,7 +171,7 @@ public class CellIndexMethod {
         return cell;
     }
 
-    public static void showResults(int[] cells, int[] particleRefs) {
+    private static void showResults(int[] cells, int[] particleRefs) {
         System.out.println("\nNeighbours:");
         for (int i = 0; i < neighbours.length; i++) {
             StringBuilder sb = new StringBuilder(i + ": ");
