@@ -6,11 +6,10 @@ import java.util.Random;
 public class Particle {
     private int index;
     public double velocity, speedAngle;
-    public double x, y, ax, ay;
+    public double x, y;
     public double radius;
 
-    public Particle(int index, double x, double y, double velocity, double speedAngle, double ax, double ay,
-            double radius) {
+    public Particle(int index, double x, double y, double velocity, double speedAngle, double radius) {
         this.index = index;
         this.x = x;
         this.y = y;
@@ -18,8 +17,6 @@ public class Particle {
         this.velocity = velocity;
         this.speedAngle = speedAngle;
 
-        this.ax = ax;
-        this.ay = ay;
         this.radius = radius;
     }
 
