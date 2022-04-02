@@ -8,8 +8,13 @@ let radios = [],
 RESIZE_FACTOR = 30;
 
 function preload() {
-	static = loadStrings('../output/static-info.txt');
-	dynamic = loadStrings('../output/dynamic-info.txt');
+	let simNumber = 3;
+	static = loadStrings(
+		`../output/static-info${simNumber.toString().padStart(3, '0')}.txt`
+	);
+	dynamic = loadStrings(
+		`../output/dynamic-info${simNumber.toString().padStart(3, '0')}.txt`
+	);
 }
 
 function loadStaticData() {
