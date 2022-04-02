@@ -10,8 +10,6 @@ import java.util.stream.IntStream;
 import simulations.SimulationManager;
 
 /*
-    TODO: hacer output de múltiples simulaciones
-    TODO: agregar gráfico con barras de error a la clase Plotter
     TODO: Extra: Integrar mejor la opción de contorno continuo
 */
 public class Main {
