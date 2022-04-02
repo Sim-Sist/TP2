@@ -9,8 +9,7 @@ public class Particle {
     public double x, y;
     public double radius;
 
-    public Particle(int index, double x, double y, double velocity, double speedAngle, double ax, double ay,
-            double radius) {
+    public Particle(int index, double x, double y, double velocity, double speedAngle, double radius) {
         this.index = index;
         this.x = x;
         this.y = y;
