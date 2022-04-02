@@ -93,9 +93,9 @@ public class SimulationManager {
             space.initialize();
 
             System.out.println(String.format("Starting simulation %d...", simNumber++));
-            while (steps < MAX_STEPS) {
+            while (steps++ < MAX_STEPS) {
                 if (DEBUG)
-                    System.out.println(String.format("\tStep %d", ++steps));
+                    System.out.println(String.format("\tStep %d", steps));
                 space.computeNextStep();
             }
             if (DEBUG)
