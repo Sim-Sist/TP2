@@ -8,7 +8,7 @@ let radios = [],
 RESIZE_FACTOR = 30;
 
 function preload() {
-	let simNumber = 3;
+	let simNumber = 0;
 	static = loadStrings(
 		`../output/static-info${simNumber.toString().padStart(3, '0')}.txt`
 	);
@@ -68,12 +68,13 @@ function refresh() {
 }
 
 var capturer;
-let recordAnimation = false;
-let recordingTime = 1; // in seconds MAX:9
+let recordAnimation = true;
+let recordingTime = 15; // in seconds MAX:9
 
 function setup() {
 	loadStaticData();
 	loadDynamicData();
+	frameRate(60);
 	let canvas = createCanvas(canvasSize, canvasSize);
 	canvas.id('canvas');
 	if (recordAnimation) {
@@ -107,7 +108,7 @@ function draw() {
 		}
 		capturer.capture(document.getElementById('canvas'));
 	}
-	if (frameCount == 2000) {
+	if (frameCount == 1000) {
 		noLoop();
 	}
 }
@@ -130,7 +131,7 @@ class Particle {
 		let velocity = createVector(this.vx, this.vy);
 		let theta = velocity.heading() + radians(90);
 		let r;
-		if (this.d == 0) r = 1;
+		if (this.d == 0) r = 0.05;
 		else {
 			r = this.d / 2;
 		}
