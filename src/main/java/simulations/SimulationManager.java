@@ -5,10 +5,10 @@ import particles.Space;
 
 public class SimulationManager {
     /**** Logging ****/
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     /**** Default Values ****/
     private static final double SIZE = 20; // L
-    private static final int PARTICLES = 800; // N
+    private static final int PARTICLES = 400; // N
     private static final double CRITICAL_RADIUS = 1;
     private static final double MIN_RADIUS = 1, MAX_RADIUS = 2;
     private static final double CONSTANT_RADIUS = 0;
@@ -50,8 +50,9 @@ public class SimulationManager {
 
         while (steps < MAX_STEPS) {
             if (DEBUG)
-                System.out.println(String.format("Step %d", ++steps));
+                System.out.println(String.format("Step %d", steps));
             space.computeNextStep();
+            steps++;
         }
         if (DEBUG)
             System.out.println();
