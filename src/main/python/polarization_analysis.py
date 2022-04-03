@@ -16,11 +16,11 @@ PLOTS_LOCAL_PATH = OUTPUT_LOCAL_PATH + "plots/"
 
 ####################### Main
 
-SIM_AMOUNT = 11
+SIM_AMOUNT = 20
 FRAMES_PER_SIM = 2000
 VELOCITY = 0.3
 
-NAME_OF_VARIABLE="Noise Range"
+NAME_OF_VARIABLE="Density"
 
 mean_polarizations = []
 deviations = []

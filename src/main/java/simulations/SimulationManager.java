@@ -12,8 +12,8 @@ public class SimulationManager {
     private static final double CRITICAL_RADIUS = 1;
     private static final double MIN_RADIUS = 1, MAX_RADIUS = 2;
     private static final double CONSTANT_RADIUS = 0;
-    private static final double VELOCITY = 0.3;
-    private static final double NOISE_LIMIT = 1;
+    private static final double VELOCITY = 0.03;
+    private static final double NOISE_LIMIT = 3.5;
 
     /**** Analysis values ****/
     private static final int MAX_STEPS = 2000;

@@ -15,9 +15,9 @@ public class Space {
     private double criticalRadius = 50;
     private Double constantRadius = null;
     private Double constantVelocity = null;
-    private final double DEFAULT_MIN_RADIUS = 1, DEFAULT_MAX_RADIUS = 10;
+    private final static double DEFAULT_MIN_RADIUS = 1, DEFAULT_MAX_RADIUS = 10;
     private double minRadius = DEFAULT_MIN_RADIUS, maxRadius = DEFAULT_MAX_RADIUS;
-    private final double DEFAULT_MIN_VELOCITY = 0.3, DEFAULT_MAX_VELOCITY = 1;
+    private final static double DEFAULT_MIN_VELOCITY = 0.03, DEFAULT_MAX_VELOCITY = 0.1;
     private double minVelocity = DEFAULT_MIN_VELOCITY, maxVelocity = DEFAULT_MAX_VELOCITY;
     /*** Output file vars ***/
     private String staticFileName, dynamicFileName;
@@ -117,7 +117,7 @@ public class Space {
 
     @SuppressWarnings("unchecked")
     public void computeNextStep() {
-        calculateNeighbours();
+        computeNeighbours();
         List<Double>[] oldAngles = (List<Double>[]) new LinkedList[particles.length];
         for (int i = 0; i < neighboursSetArray.length; i++) {
             oldAngles[i] = new LinkedList<>(
@@ -145,7 +145,7 @@ public class Space {
         step++;
     }
 
-    public void calculateNeighbours() {
+    private void computeNeighbours() {
         neighboursSetArray = CellIndexMethod.apply(this);
     }
 
@@ -173,7 +173,7 @@ public class Space {
         this.dynamicFileName = filename;
     }
 
-    public void outputInitialState() {
+    private void outputInitialState() {
         boolean success;
         if (staticFileName == null) {
             success = this.oManager.outputInitialState();
