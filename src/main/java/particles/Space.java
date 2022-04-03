@@ -98,8 +98,6 @@ public class Space {
                     rnd.nextDouble() * size, // y
                     velocity, // velocity
                     speedAngle, // speedAngle
-                    0.0, // ax
-                    0.0, // ay
                     radius);
             if (p.x < p.radius || (p.x + p.radius) > this.size || p.y < p.radius || (p.y + p.radius) > size) {
                 i--;

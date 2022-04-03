@@ -9,8 +9,8 @@ import particles.Space;
 
 public class SpaceOutputManager extends OutputManager {
     private Space s;
-    private final String INIT_STATE_DEFAULT_FILENAME = "static-info.txt";
-    private final String DYNAMIC_STATE_DEFAULT_FILENAME = "dynamic-info.txt";
+    private final String INIT_STATE_DEFAULT_FILENAME = "static-info000.txt";
+    private final String DYNAMIC_STATE_DEFAULT_FILENAME = "dynamic-info000.txt";
 
     public SpaceOutputManager(Space s) {
         this.s = s;
