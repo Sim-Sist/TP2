@@ -1,10 +1,11 @@
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
 import simulations.SimulationManager;
 
-/*
-    TODO: Extra: Integrar mejor la opción de contorno continuo
-*/
 public class Main {
 
 
@@ -18,11 +19,18 @@ public class Main {
                     Double.parseDouble(args[1]), // size
                     Double.parseDouble(args[2])); // noise
         }
-        // sManager.simulate();
+        sManager.simulate();
 
-        // sManager.simulationSuiteForNoise(IntStream.range(0, 11).boxed().mapToDouble(i
-        // -> i * 0.5).boxed().toList());
-        sManager.simulationSuiteForDensity(IntStream.range(1, 21).boxed().mapToDouble(i -> i * 0.5).boxed().toList());
+        // List<Double> noiseValues = new LinkedList<>();
+        // noiseValues.addAll(IntStream.rangeClosed(0, 10).mapToDouble(i -> i *
+        // 0.5).boxed().toList());
+        // sManager.simulationSuiteForNoise(noiseValues);
+
+        // List<Double> densityValues = new LinkedList<>();
+        // densityValues.add(0.1);
+        // densityValues.addAll(IntStream.rangeClosed(1, 10).mapToDouble(i ->
+        // i).boxed().toList());
+        // sManager.simulationSuiteForDensity(densityValues);
     }
 
 }

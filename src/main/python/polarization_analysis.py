@@ -14,17 +14,24 @@ PYTHON_LOCAL_PATH = "/main/python/"
 OUTPUT_LOCAL_PATH = "/main/output/"
 POLARIZATIONS_FILENAME = "polarizations.txt"
 PLOTS_LOCAL_PATH = OUTPUT_LOCAL_PATH + "plots/"
-
+VALUES_FILENAME= "values.txt"
 ####################### Main
 
 FRAMES_PER_SIM = 2000
-VELOCITY = 0.3
-variable_values = [5]
-# variable_values.extend([(i+1)*0.5 for i in range(20)])
-SIM_AMOUNT = len(variable_values)
-print(SIM_AMOUNT)
+VELOCITY = 0.03
 
+## Density variation
+variable_values = [0.1]
+variable_values.extend([i+1 for i in range(10)])
 NAME_OF_VARIABLE="Density"
+
+## Noise variation
+# variable_values = [i * 0.5 for i in range(11)]
+# NAME_OF_VARIABLE="Noise Amplitude"
+
+
+SIM_AMOUNT = len(variable_values)
+
 PLOT_EXTENSION="png" # png or pdf (better quality)
 
 mean_polarizations = []
@@ -36,6 +43,7 @@ for i in range(SIM_AMOUNT):
     filename = "static-info%03d.txt"%(i)
     static_info = open(get_src() + OUTPUT_LOCAL_PATH +filename)
     particles_amount = int(static_info.readline())
+    static_info.close()
     filename = "dynamic-info%03d.txt"%(i)
     file = open(get_src() + OUTPUT_LOCAL_PATH + filename)
     speed_acum = []
@@ -47,6 +55,7 @@ for i in range(SIM_AMOUNT):
         else:
             speed_acum[-1][0] += double(sections[2]) #vx
             speed_acum[-1][1] += double(sections[3]) #vy
+    file.close()
     polarizations = [math.sqrt(v[0]**2 + v[1]**2) / (VELOCITY * particles_amount) for v in speed_acum]
     static_values = polarizations[1000:]
     mean_polarizations.append(mean(static_values))
@@ -56,7 +65,7 @@ for i in range(SIM_AMOUNT):
 plot_output_path = get_src()+PLOTS_LOCAL_PATH
 
 plt.figure(figsize=(16,10),dpi=80)
-plt.errorbar([i * 0.5 for i in range(len(mean_polarizations))], mean_polarizations, yerr = deviations,ecolor='red')
+plt.errorbar([i * 0.5 for i in range(len(mean_polarizations))], mean_polarizations, yerr = deviations,ecolor='red',marker='o')
 plt.ylim(0,1)
 plt.xlim(0,5)
 plt.grid(axis='both', alpha=.3)
@@ -104,11 +113,14 @@ for i in range(len(raw_polarizations)):
 
 df = pnd.DataFrame(
     {
-        "Density": [(i+1) * 0.5 for i in range(len(mean_polarizations))],
+        NAME_OF_VARIABLE: variable_values,
         "Polarization":mean_polarizations,
         "Error":deviations
     })
 
+values_file = open(plot_output_path+VALUES_FILENAME,"w")
+values_file.write(df.to_string())
+values_file.close()
 print(df)
 
 

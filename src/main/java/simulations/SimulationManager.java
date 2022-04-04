@@ -5,7 +5,7 @@ import particles.Space;
 
 public class SimulationManager {
     /**** Logging ****/
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     /**** Default Values ****/
     private static final double SIZE = 20; // L
     private static final int PARTICLES = 400; // N
@@ -13,7 +13,7 @@ public class SimulationManager {
     private static final double MIN_RADIUS = 1, MAX_RADIUS = 2;
     private static final double CONSTANT_RADIUS = 0;
     private static final double VELOCITY = 0.03;
-    private static final double NOISE_LIMIT = 3.5;
+    private static final double NOISE_LIMIT = 2;
 
     /**** Analysis values ****/
     private static final int MAX_STEPS = 2000;
@@ -48,11 +48,10 @@ public class SimulationManager {
         space.setVelocities(VELOCITY);
         space.initialize();
 
-        while (steps < MAX_STEPS) {
+        while (steps++ < MAX_STEPS) {
             if (DEBUG)
                 System.out.println(String.format("Step %d", steps));
             space.computeNextStep();
-            steps++;
         }
         if (DEBUG)
             System.out.println();

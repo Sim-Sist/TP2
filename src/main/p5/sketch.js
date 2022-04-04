@@ -68,7 +68,7 @@ function refresh() {
 }
 
 var capturer;
-let recordAnimation = true;
+let recordAnimation = false;
 let recordingTime = 15; // in seconds MAX:9
 
 function setup() {
